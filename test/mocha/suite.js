@@ -50,15 +50,19 @@ describe('normalizeSelector', function() {
     it('remove trailing comment', function () {
       assert.equal(normalizeSelector(" /*c1*/ .e1/*c2*/.e2 /*c3*/ .e3 /*c4*/ "), expected);
     });
+    
     it('remove trailing whitespace', function () {
       assert.equal(normalizeSelector(" /*c1*/ .e1/*c2*/.e2 /*c3*/ .e3   "), expected);
     });
+    
     it('remove leading whitespace', function () {
       assert.equal(normalizeSelector(" /*c1*/ .e1/*c2*/.e2 /*c3*/ .e3"), expected);
     });
+    
     it('remove inner whitespace', function () {
       assert.equal(normalizeSelector("/*c1*/.e1/*c2*/.e2 /*c3*/ .e3"), expected);
     });
+    
     it('remove inner comments', function () {
       assert.equal(normalizeSelector(".e1/*c2*/.e2 /*c3*/ .e3"), expected);
     });

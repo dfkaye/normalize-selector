@@ -9,6 +9,20 @@ project is built following my
 [tdd-boilerplate](https://github.com/dfkaye/tdd-boilerplate), with testem, npm 
 scripts, travis, rawgithub, and mocha (node and browser tests).
 
+# tests
+
+node command
+
+    npm test
+    
+or
+
+    node ./test/mocha/node-suite.js
+
+If you're using testem
+
+    npm run testem
+    
 # travis
 
 [![Build Status](https://travis-ci.org/dfkaye/normalize-selector.png?branch=master)](https://travis-ci.org/dfkaye/normalize-selector)

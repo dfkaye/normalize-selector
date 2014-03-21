@@ -13,20 +13,23 @@
 
   function normalizeSelector(sel) {
 
-    var state = 0, tokens = [], match, unmatched, regex,
-      next_match_idx = 0, prev_match_idx = 0, i,
-      not_escaped_pattern = /(?:[^\\]|(?:^|[^\\])(?:\\\\)+)$/,
-      whitespace_pattern = /^\s+$/,
-      state_patterns = [
-        /\s+|[~|^$*]?\=|[>~+\[\]"']|\/\*/g, // general
-        null, // string literal (placeholder)
-        /\*\//g // comment
-      ]
-    ;
+    var match, unmatched, regex, i;
+    var state = 0;
+    var tokens = [];
+    var next_match_idx = 0;
+    var prev_match_idx = 0;
+    var not_escaped_pattern = /(?:[^\\]|(?:^|[^\\])(?:\\\\)+)$/;
+    var whitespace_pattern = /^\s+$/;
+    var state_patterns = [
+      /\s+|[~|^$*]?\=|[>~+\[\]"']|\/\*/g, // general
+      null, // string literal (placeholder)
+      /\*\//g // comment
+    ];
    
     sel = sel.trim();
    
     while (next_match_idx < sel.length) {
+    
       unmatched = "";
    
       regex = state_patterns[state];
@@ -40,13 +43,15 @@
    
         // collect the previous string chunk not matched before this token
         if (prev_match_idx < next_match_idx - match[0].length) {
-          unmatched = sel.substring(prev_match_idx,next_match_idx - match[0].length);
+          unmatched = sel.substring(prev_match_idx, 
+                                    next_match_idx - match[0].length);
         }
       }
       else {
         prev_match_idx = next_match_idx;
         next_match_idx = sel.length;
         unmatched = sel.substr(prev_match_idx);
+        
         if (!unmatched) break;
       }
    
@@ -56,7 +61,7 @@
           // preserve the unmatched portion preceding
           if (unmatched) {
             if (tokens.length > 0 &&
-              /^[~+>]$/.test(tokens[tokens.length-1])
+              /^[~+>]$/.test(tokens[tokens.length - 1])
             ) {
               tokens.push(" ");
             }
@@ -76,7 +81,7 @@
           else if (/^(?:\s+|[~+>])$/.test(match[0])) {
             // need to insert whitespace before?
             if (tokens.length > 0 &&
-              !whitespace_pattern.test(tokens[tokens.length-1])
+              !whitespace_pattern.test(tokens[tokens.length - 1])
             ) {
               // add some placeholder whitespace (which we may remove later)
               tokens.push(" ");
@@ -92,18 +97,18 @@
         }
         // string literal or comment
         else {
-          tokens[tokens.length-1] += unmatched;
+          tokens[tokens.length - 1] += unmatched;
           // unescaped terminator to string literal or comment?
-          if (not_escaped_pattern.test(tokens[tokens.length-1])) {
+          if (not_escaped_pattern.test(tokens[tokens.length - 1])) {
             // comment to be dropped or turned it into whitespace?
             if (state === 2) {
               if (tokens.length < 2 ||
-                whitespace_pattern.test(tokens[tokens.length-2])
+                whitespace_pattern.test(tokens[tokens.length - 2])
               ) {
                 tokens.pop();
               }
               else {
-                tokens[tokens.length-1] = " ";
+                tokens[tokens.length - 1] = " ";
               }
    
               // handled already
@@ -112,12 +117,12 @@
    
             state = 0;
           }
-          tokens[tokens.length-1] += match[0];
+          tokens[tokens.length - 1] += match[0];
         }
       }
       else if (unmatched) {
         if (tokens.length > 0 &&
-          !whitespace_pattern.test(tokens[tokens.length-1])
+          !whitespace_pattern.test(tokens[tokens.length - 1])
         ) {
           tokens.push(" ");
         }
@@ -131,9 +136,9 @@
         whitespace_pattern.test(token) &&
         (
           idx === 0 ||
-          /^(?:[~|^$*]?\=|[\[])$/.test(tokens[idx-1]) ||
+          /^(?:[~|^$*]?\=|[\[])$/.test(tokens[idx - 1]) ||
           idx === (tokens.length - 1) ||
-          /^(?:[~|^$*]?\=|[\]])$/.test(tokens[idx+1])
+          /^(?:[~|^$*]?\=|[\]])$/.test(tokens[idx + 1])
         )
       )) {
         return true;
