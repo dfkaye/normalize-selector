@@ -15,16 +15,47 @@ describe('normalizeSelector', function() {
     assert.equal(typeof normalizeSelector, 'function', 'wrong type');
   });
 
-  it('"#foo .bar": "#foo .bar"', function () {
-    assert.equal(normalizeSelector("#foo .bar"), "#foo .bar");
+  describe('base cases', function () {
+  
+    it('should return optimized selector', function () {
+      assert.equal(normalizeSelector("#foo .bar"), "#foo .bar");
+    });
+    
+    it('should trim whitespace', function () {
+      assert.equal(normalizeSelector(" #foo   .bar "), "#foo .bar");
+    });
+    
+    it('should pad child selector', function () {
+      assert.equal(normalizeSelector("#foo>.bar"), "#foo > .bar");
+    });
   });
   
-  it('"  #foo   .bar  ": "#foo .bar"', function () {
-    assert.equal(normalizeSelector(" #foo   .bar "), "#foo .bar");
+  describe('CSS at-rules', function () {
+  
   });
   
-  it('"#foo>.bar": "#foo > .bar"', function () {
-    assert.equal(normalizeSelector("#foo>.bar"), "#foo > .bar");
+  describe('Descriptors', function () {
+  
+  });
+  
+  describe('Simple selectors', function () {
+  
+  });
+  
+  describe('Attribute selectors', function () {
+  
+  });
+  
+  describe('Combinators', function () {
+  
+  });
+  
+  describe('Pseudo-classes', function () {
+  
+  });
+  
+  describe('Pseudo-elements', function () {
+  
   });
   
   // should be more focused - 

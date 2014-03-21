@@ -32,3 +32,10 @@ If you're using testem
 view the browser suite directly on 
 [rawgithub](https://rawgithub.com/dfkaye/normalize-selector/master/test/mocha/browser-suite.html)
 
+# cases
+
+CSS [OPEN WEB REFERENCE](http://ref.openweb.io/CSS/)
+
+# license
+
+MIT
