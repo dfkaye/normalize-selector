@@ -13,127 +13,143 @@
 
   function normalizeSelector(sel) {
 
-    var match, unmatched, regex, i;
-    var state = 0;
-    var tokens = [];
-    var next_match_idx = 0;
-    var prev_match_idx = 0;
-    var not_escaped_pattern = /(?:[^\\]|(?:^|[^\\])(?:\\\\)+)$/;
-    var whitespace_pattern = /^\s+$/;
-    var state_patterns = [
+    // fallback if trim not available
+    //sel = sel.replace(/^\s+|\s+$/gm, BLANK)
+    sel = sel.trim();
+    
+    var BLANK = '';
+    var SPACE = ' ';
+    var RE_NOT_ESCAPED = /(?:[^\\]|(?:^|[^\\])(?:\\\\)+)$/;
+    var RE_WS = /^\s+$/;
+    var STATE_PATTERNS = [
       /\s+|[~|^$*]?\=|[>~+\[\]"']|\/\*/g, // general
       null, // string literal (placeholder)
       /\*\//g // comment
     ];
-   
-    sel = sel.trim();
-   
-    while (next_match_idx < sel.length) {
     
-      unmatched = "";
-   
-      regex = state_patterns[state];
-   
-      regex.lastIndex = next_match_idx;
+    var tokens = [];
+    var state = 0;
+    var next = 0;
+    var previous = 0;
+    
+    var match, unmatched, regex, i, chars, token_length;
+       
+    while (next < sel.length) {
+    
+      unmatched = BLANK;
+      
+      regex = STATE_PATTERNS[state];
+      regex.lastIndex = next;
       match = regex.exec(sel);
    
+      if (!match) {
+      
+        previous = next; // is this right??
+        next = sel.length;
+        unmatched = sel.substr(previous);
+        
+        // fail faster here
+        if (!unmatched) { 
+          break; 
+        }
+        else {
+          if (tokens.length > 0 && !RE_WS.test(tokens[tokens.length - 1])) {
+            tokens.push(SPACE);
+          }
+          tokens.push(unmatched);
+        }        
+      }
+      
+      // process match characters
       if (match) {
-        prev_match_idx = next_match_idx;
-        next_match_idx = regex.lastIndex;
+      
+        chars = match[0];
+        
+        previous = next; // is this right??
+        next = regex.lastIndex;
    
         // collect the previous string chunk not matched before this token
-        if (prev_match_idx < next_match_idx - match[0].length) {
-          unmatched = sel.substring(prev_match_idx, 
-                                    next_match_idx - match[0].length);
+        if (previous < next - chars.length) {
+          unmatched = sel.substring(previous, next - chars.length);
         }
-      }
-      else {
-        prev_match_idx = next_match_idx;
-        next_match_idx = sel.length;
-        unmatched = sel.substr(prev_match_idx);
-        
-        if (!unmatched) break;
-      }
-   
-      if (match) {
+
         // general
         if (state === 0) {
+        
           // preserve the unmatched portion preceding
           if (unmatched) {
-            if (tokens.length > 0 &&
-              /^[~+>]$/.test(tokens[tokens.length - 1])
-            ) {
-              tokens.push(" ");
+          
+            if (tokens.length > 0 && /^[~+>]$/.test(tokens[tokens.length - 1])) {
+              tokens.push(SPACE);
             }
+            
             tokens.push(unmatched);
           }
    
           // starting a string literal?
-          if (/^["']$/.test(match[0])) {
+          if (/^["']$/.test(chars)) {
+          
             state = 1;
-            state_patterns[1] = new RegExp(match[0],"g");
+            STATE_PATTERNS[1] = new RegExp(chars,"g");
           }
+          
           // starting a comment?
-          else if (match[0] === "/*") {
+          else if (chars === "/*") {
             state = 2;
           }
+          
           // handling whitespace or a combinator?
-          else if (/^(?:\s+|[~+>])$/.test(match[0])) {
+          else if (/^(?:\s+|[~+>])$/.test(chars)) {
+          
             // need to insert whitespace before?
-            if (tokens.length > 0 &&
-              !whitespace_pattern.test(tokens[tokens.length - 1])
-            ) {
+            if (tokens.length > 0 && !RE_WS.test(tokens[tokens.length - 1])) {
               // add some placeholder whitespace (which we may remove later)
-              tokens.push(" ");
+              tokens.push(SPACE);
             }
    
             // whitespace we can skip?
-            if (whitespace_pattern.test(match[0])) {
+            if (RE_WS.test(chars)) {
               continue;
             }
           }
    
-          tokens.push(match[0]);
+          tokens.push(chars);
         }
+        
         // string literal or comment
         else {
+        
           tokens[tokens.length - 1] += unmatched;
+          
           // unescaped terminator to string literal or comment?
-          if (not_escaped_pattern.test(tokens[tokens.length - 1])) {
+          if (RE_NOT_ESCAPED.test(tokens[tokens.length - 1])) {
+          
             // comment to be dropped or turned it into whitespace?
             if (state === 2) {
-              if (tokens.length < 2 ||
-                whitespace_pattern.test(tokens[tokens.length - 2])
-              ) {
+            
+              if (tokens.length < 2 || RE_WS.test(tokens[tokens.length - 2])) {
                 tokens.pop();
               }
               else {
-                tokens[tokens.length - 1] = " ";
+                tokens[tokens.length - 1] = SPACE;
               }
    
               // handled already
-              match[0] = "";
+              chars = BLANK;
             }
    
             state = 0;
           }
-          tokens[tokens.length - 1] += match[0];
+          
+          tokens[tokens.length - 1] += chars;
         }
-      }
-      else if (unmatched) {
-        if (tokens.length > 0 &&
-          !whitespace_pattern.test(tokens[tokens.length - 1])
-        ) {
-          tokens.push(" ");
-        }
-        tokens.push(unmatched);
       }
     }
    
     // remove some unnecessary whitespace in [a=b] attribute selectors
-    return tokens.filter(function(token,idx){
+    return tokens.filter(function(token, idx) {
       if (!(
-        whitespace_pattern.test(token) &&
+        RE_WS.test(token) &&
         (
           idx === 0 ||
           /^(?:[~|^$*]?\=|[\[])$/.test(tokens[idx - 1]) ||
@@ -143,6 +159,6 @@
       )) {
         return true;
       }
-    }).join("");
+    }).join(BLANK);
   }
 }());
