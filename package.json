@@ -1,0 +1,23 @@
+{
+  "name": "normalize-selector",
+  "version": "0.0.0",
+  "description": "bullpen for testing @getify's normalizeSelector method",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:dfkaye/normalize-selector.git"
+  },
+  "keywords": [
+    "css",
+    "selector",
+    "normalize"
+  ],
+  "author": "David Kaye <dfkaye@yahoo.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dfkaye/normalize-selector/issues"
+  }
+}
