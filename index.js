@@ -13,8 +13,8 @@
 
   function normalizeSelector(sel) {
 
-    // fallback if trim not available
-    //sel = sel.replace(/^\s+|\s+$/gm, BLANK)
+    // need fallback if trim not available??
+    //sel = sel.replace(/^\s+|\s+$/gm, BLANK);
     sel = sel.trim();
     
     var BLANK = '';
@@ -22,9 +22,10 @@
     var RE_NOT_ESCAPED = /(?:[^\\]|(?:^|[^\\])(?:\\\\)+)$/;
     var RE_WS = /^\s+$/;
     var STATE_PATTERNS = [
-      /\s+|[~|^$*]?\=|[>~+\[\]"']|\/\*/g, // general
+      /\s+|[~|^$*]?\=|[>~+\[\]"']|\/\*|\(/g, // general
       null, // string literal (placeholder)
-      /\*\//g // comment
+      /\*\//g, // end comment
+      /\)/g // end parenthesis
     ];
     
     var tokens = [];
@@ -32,19 +33,19 @@
     var next = 0;
     var previous = 0;
     
-    var match, unmatched, regex, i, chars, token_length;
+    var match, unmatched, pattern, i, token, token_length;
        
     while (next < sel.length) {
     
       unmatched = BLANK;
       
-      regex = STATE_PATTERNS[state];
-      regex.lastIndex = next;
-      match = regex.exec(sel);
+      pattern = STATE_PATTERNS[state];
+      pattern.lastIndex = next;
+      match = pattern.exec(sel);
    
       if (!match) {
       
-        previous = next; // is this right??
+        previous = next;
         next = sel.length;
         unmatched = sel.substr(previous);
         
@@ -63,14 +64,13 @@
       // process match characters
       if (match) {
       
-        chars = match[0];
-        
-        previous = next; // is this right??
-        next = regex.lastIndex;
+        token = match[0];
+        previous = next;
+        next = pattern.lastIndex;
    
         // collect the previous string chunk not matched before this token
-        if (previous < next - chars.length) {
-          unmatched = sel.substring(previous, next - chars.length);
+        if (previous < next - token.length) {
+          unmatched = sel.substring(previous, next - token.length);
         }
 
         // general
@@ -87,19 +87,24 @@
           }
    
           // starting a string literal?
-          if (/^["']$/.test(chars)) {
+          if (/^["']$/.test(token)) {
           
             state = 1;
-            STATE_PATTERNS[1] = new RegExp(chars,"g");
+            STATE_PATTERNS[1] = new RegExp(token,"g");
           }
           
           // starting a comment?
-          else if (chars === "/*") {
+          else if (token === "/*") {
             state = 2;
           }
           
+          // starting parenthesis
+          else if (token == '(') {
+            state = 3;
+          }
+          
           // handling whitespace or a combinator?
-          else if (/^(?:\s+|[~+>])$/.test(chars)) {
+          else if (/^(?:\s+|[~+>])$/.test(token)) {
           
             // need to insert whitespace before?
             if (tokens.length > 0 && !RE_WS.test(tokens[tokens.length - 1])) {
@@ -108,12 +113,12 @@
             }
    
             // whitespace we can skip?
-            if (RE_WS.test(chars)) {
+            if (RE_WS.test(token)) {
               continue;
             }
           }
    
-          tokens.push(chars);
+          tokens.push(token);
         }
         
         // string literal or comment
@@ -135,26 +140,53 @@
               }
    
               // handled already
-              chars = BLANK;
+              token = BLANK;
+            }
+            
+            // closing parentheses
+            if (state === 3) {
+            
+              (function () {
+              
+                /* Using an IIFE to avoid leaking internal vars */
+              
+                // remove internal whitespace from parentheses
+                var index = tokens.length - 1;
+                var chars = tokens[index];
+                var k = chars.length;
+                
+                tokens[index] = [];
+                
+                while (k--) {
+                  if (!RE_WS.test(chars[k])) {
+                    tokens[index].unshift(chars[k]);
+                  }
+                }
+                
+                tokens[index] = tokens[index].join(BLANK);
+                
+              }());
+              
             }
    
             state = 0;
           }
           
-          tokens[tokens.length - 1] += chars;
+          tokens[tokens.length - 1] += token;
         }
       }
     }
    
-    // remove some unnecessary whitespace in [a=b] attribute selectors
+    // remove some unnecessary whitespace in [a=b] attribute selectors and 
+    // parentheses ( color ) 
     return tokens.filter(function(token, idx) {
       if (!(
         RE_WS.test(token) &&
         (
           idx === 0 ||
-          /^(?:[~|^$*]?\=|[\[])$/.test(tokens[idx - 1]) ||
+          /^(?:[~|^$*]?\=|[\[]|[\(])$/.test(tokens[idx - 1]) ||
           idx === (tokens.length - 1) ||
-          /^(?:[~|^$*]?\=|[\]])$/.test(tokens[idx + 1])
+          /^(?:[~|^$*]?\=|[\]]|[\)])$/.test(tokens[idx + 1])
         )
       )) {
         return true;

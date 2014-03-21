@@ -14,95 +14,57 @@ describe('normalizeSelector', function() {
   it('should be function', function () {
     assert.equal(typeof normalizeSelector, 'function', 'wrong type');
   });
-  
-  // BIG SELECTOR
-  // should be more focused - 
-  // tilde
-  // attribute selector
-  // :hover
-  // :focus
-  // ::after
-  // + sibling
-  // .class
-  
+
   it('should normalize BIG SELECTOR', function () {
     var selector = "*~*>*.foo[   href *=  \"/\"   ]:hover>*[  data-foo =   \"bar\"      ]:focus+*.baz::after";
     var expected = "* ~ * > *.foo[href*=\"/\"]:hover > *[data-foo=\"bar\"]:focus + *.baz::after";
     assert.equal(normalizeSelector(selector), expected);
   });
-    
+
   it('should return optimized selector with no change', function () {
     assert.equal(normalizeSelector("#foo .bar"), "#foo .bar");
   });
-  
+
   it('should trim whitespace', function () {
     assert.equal(normalizeSelector(" #foo   .bar "), "#foo .bar");
   });
-  
+
   it('should separate between combinators', function () {
     assert.equal(normalizeSelector("#foo>.bar+.baz"), "#foo > .bar + .baz");
   });
-  
+
   it('should not separate concatenated classes', function () {
     assert.equal(normalizeSelector("#foo.bar.baz"), "#foo.bar.baz");
   });
-  
+
   it('should remove comments', function () {
     assert.equal(normalizeSelector(".e1 /* c2 */ .e2"), ".e1 .e2");
-  });    
+  });
   
-  // describe('CSS at-rules', function () {
+  it('should normalize @-rule parentheses', function () {
+    var selector = "@media  screen  and  ( color ),  projection  and  (color )";
+    var expected = "@media screen and (color), projection and (color)";
+    assert.equal(normalizeSelector(selector), expected);
+  });
   
-  // });
-  
-  // describe('Descriptors', function () {
-  
-  // });
-  
-  // describe('Simple selectors', function () {
-  
-  // });
-  
-  // describe('Attribute selectors', function () {
-  
-  // });
-  
-  // describe('Combinators', function () {
-  
-  // });
-  
-  // describe('Pseudo-classes', function () {
-  
-  // });
-  
-  // describe('Pseudo-elements', function () {
-  
-  // });
-  
-  // describe('comments', function () {
-    // var expected = ".e1 .e2 .e3";
+  it('should normalize descriptors', function () {
+   // "@counter-style triangle"
+    var selector = "@counter-style    triangle";
+    assert.equal(normalizeSelector(selector), "@counter-style triangle");
+  });
+
+  it('should normalize case-insensitivity attribute selector', function () {
+    assert.equal(normalizeSelector("[ att = val  i ]"), "[att=val i]");
+  });
     
-    //remove leading comment
-    
-    // it('should remove comments and whitespace', function () {
-      // assert.equal(normalizeSelector(" /*c1*/ .e1/*c2*/.e2 /*c3*/ .e3 /*c4*/ "), expected);
-    // });
-    
-    //remove or replace with ws?
-    // it('should remove comments', function () {
-      // assert.equal(normalizeSelector("/*c1*/.e1/*c2*/.e2/*c3*/.e3"), expected);
-    // });
-    
-    // it('remove trailing whitespace', function () {
-      // assert.equal(normalizeSelector(" /*c1*/ .e1/*c2*/.e2 /*c3*/ .e3   "), expected);
-    // });
-    
-    // it('remove leading whitespace', function () {
-      // assert.equal(normalizeSelector(" /*c1*/ .e1/*c2*/.e2 /*c3*/ .e3"), expected);
-    // });
-        
-    // it('remove inner comments', function () {
-      // assert.equal(normalizeSelector(".e1/*c2*/.e2 /*c3*/ .e3"), expected);
-    // });
-  // });
+  it('should normalize pseudo-classes', function () {
+    var selector = "   :nth-last-of-type( )   ";
+    assert.equal(normalizeSelector(selector), ":nth-last-of-type()");
+  });
+  
+  it('should normalize pseudo-elements', function () {
+    var selector = "   ::nth-fragment(   )   ";
+    assert.equal(normalizeSelector(selector), "::nth-fragment()");
+  });
+
 });
