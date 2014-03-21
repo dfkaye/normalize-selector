@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node ./test/mocha/node-suite.js",
-    "testem": "testem -l mocha -t ./test/mocha/browser-suite.html" 
+    "testem": "testem -l mocha -t ./test/mocha/browser-suite.html"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,6 @@
     "url": "https://github.com/dfkaye/normalize-selector/issues"
   },
   "devDependencies": {
-    "mocha": "~1.17"
-  }  
+    "mocha": "~1.18.2"
+  }
 }
