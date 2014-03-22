@@ -12,6 +12,7 @@ if (typeof require == 'function') {
 describe('normalizeSelector', function() {
 
   it('should be function', function () {
+  console.log(normalizeSelector);
     assert.equal(typeof normalizeSelector, 'function', 'wrong type');
   });
 
