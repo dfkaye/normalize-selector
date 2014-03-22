@@ -41,6 +41,10 @@ describe('normalizeSelector', function() {
     assert.equal(normalizeSelector(".e1 /* c2 */ .e2"), ".e1 .e2");
   });
   
+  it('should replace comments with single whitespace', function () {
+    assert.equal(normalizeSelector(".e1/* c2 */.e2"), ".e1 .e2");
+  });
+  
   it('should normalize @-rule parentheses', function () {
     var selector = "@media  screen  and  ( color ),  projection  and  (color )";
     var expected = "@media screen and (color), projection and (color)";
