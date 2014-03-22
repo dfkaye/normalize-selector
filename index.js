@@ -11,6 +11,13 @@
     !window.normalizeSelector && (window.normalizeSelector = normalizeSelector);
   }
 
+  /*
+    author: kyle simpson (@getify)
+    original source: https://gist.github.com/getify/9679380
+    
+    modified for tests by david kaye (@dfkaye)
+    21 march 2014
+  */
   function normalizeSelector(sel) {
 
     // need fallback if trim not available??

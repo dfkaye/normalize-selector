@@ -16,8 +16,10 @@ describe('normalizeSelector', function() {
   });
 
   it('should normalize BIG SELECTOR', function () {
-    var selector = "*~*>*.foo[   href *=  \"/\"   ]:hover>*[  data-foo =   \"bar\"      ]:focus+*.baz::after";
-    var expected = "* ~ * > *.foo[href*=\"/\"]:hover > *[data-foo=\"bar\"]:focus + *.baz::after";
+    var selector = "*~*>*.foo[   href *=  \"/\"   ]:hover>*[  data-foo =   " +
+                   "\"bar\"      ]:focus+*.baz::after";
+    var expected = "* ~ * > *.foo[href*=\"/\"]:hover > *[data-foo=\"bar\"]:" +
+                   "focus + *.baz::after";
     assert.equal(normalizeSelector(selector), expected);
   });
 
@@ -37,12 +39,17 @@ describe('normalizeSelector', function() {
     assert.equal(normalizeSelector("#foo.bar.baz"), "#foo.bar.baz");
   });
 
+  it('should normalize asterisks', function () {
+    var selector = " *.class[ data * = 'data' ] ";
+    assert.equal(normalizeSelector(selector), "*.class[data *='data']");
+  });
+  
   it('should remove comments', function () {
     assert.equal(normalizeSelector(".e1 /* c2 */ .e2"), ".e1 .e2");
   });
   
   it('should replace comments with single whitespace', function () {
-    assert.equal(normalizeSelector(".e1/* c2 */.e2"), ".e1 .e2");
+    assert.equal(normalizeSelector("tag/* c2 */tag"), "tag tag");
   });
   
   it('should normalize @-rule parentheses', function () {
@@ -52,7 +59,6 @@ describe('normalizeSelector', function() {
   });
   
   it('should normalize descriptors', function () {
-   // "@counter-style triangle"
     var selector = "@counter-style    triangle";
     assert.equal(normalizeSelector(selector), "@counter-style triangle");
   });
