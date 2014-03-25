@@ -1,7 +1,7 @@
 {
   "name": "normalize-selector",
   "version": "0.0.0",
-  "description": "bullpen for testing @getify's normalizeSelector method",
+  "description": "squatting tests for @getify's normalizeSelector method",
   "main": "index.js",
   "scripts": {
     "test": "node ./test/mocha/node-suite.js",

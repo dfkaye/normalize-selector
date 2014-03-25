@@ -12,7 +12,6 @@ if (typeof require == 'function') {
 describe('normalizeSelector', function() {
 
   it('should be function', function () {
-  console.log(normalizeSelector);
     assert.equal(typeof normalizeSelector, 'function', 'wrong type');
   });
 
@@ -42,7 +41,7 @@ describe('normalizeSelector', function() {
 
   it('should normalize asterisks', function () {
     var selector = " *.class[ data * = 'data' ] ";
-    assert.equal(normalizeSelector(selector), "*.class[data *='data']");
+    assert.equal(normalizeSelector(selector), "*.class[data*='data']");
   });
   
   it('should remove comments', function () {
@@ -53,10 +52,30 @@ describe('normalizeSelector', function() {
     assert.equal(normalizeSelector("tag/* c2 */tag"), "tag tag");
   });
   
+  it('should normalize parentheses', function() {
+    var selector = "((a ) (b(c ) ) d )>*[ data-foo = \"bar\" ]";
+    var expected = "((a)(b(c))d) > *[data-foo=\"bar\"]";
+    assert.equal(normalizeSelector(selector), expected);
+  });
+  
   it('should normalize @-rule parentheses', function () {
     var selector = "@media  screen  and  ( color ),  projection  and  (color )";
     var expected = "@media screen and (color), projection and (color)";
     assert.equal(normalizeSelector(selector), expected);
+  });
+  
+  it('should normalize @-rules with compound parentheses', function () {
+    var selector = "@media  handheld  and  ( min-width : 20em ),   screen  " +
+                   "and  ( min-width: 20em )";
+    var expected = "@media handheld and (min-width:20em), screen and " +
+                   "(min-width:20em)";
+    assert.equal(normalizeSelector(selector), expected);
+  });
+  
+  it('should normalize @-rules with operations', function () {
+    var selector = "@media  screen  and  ( device-aspect-ratio : 2560 / 1440 )";
+    var expected = "@media screen and (device-aspect-ratio:2560/1440)";
+    assert.equal(normalizeSelector(selector), expected);    
   });
   
   it('should normalize descriptors', function () {
@@ -65,7 +84,7 @@ describe('normalizeSelector', function() {
   });
 
   it('should normalize case-insensitivity attribute selector', function () {
-    assert.equal(normalizeSelector("[ att = val  i ]"), "[att=val i]");
+    assert.equal(normalizeSelector("[ att ~= val  i ]"), "[att~=val i]");
   });
     
   it('should normalize pseudo-classes', function () {
@@ -78,4 +97,9 @@ describe('normalizeSelector', function() {
     assert.equal(normalizeSelector(selector), "::nth-fragment()");
   });
 
+  it('should normalize backslashes', function () {
+    var selector = "#foo[ a = \" b \\\" c\\\\\" ]";
+    var expected = "#foo[a=\" b \\\" c\\\\\"]";
+    assert.equal(normalizeSelector(selector), expected);    
+  });
 });

@@ -5,6 +5,14 @@
 bullpen for testing [Kyle Simpson](//github.com/getify)'s `normalizeSelector()` 
 method from https://gist.github.com/getify/9679380
 
+# iteration
+
+`normalize-selector-02.js`
+
+# npm
+
+squatting the name normalize-selector until @getify ready for pub
+
 # rawgithub
 
 view the browser suite directly on 
