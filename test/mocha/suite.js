@@ -86,7 +86,13 @@ describe('normalizeSelector', function() {
   it('should normalize case-insensitivity attribute selector', function () {
     assert.equal(normalizeSelector("[ att ~= val  i ]"), "[att~=val i]");
   });
-    
+  
+  it('should normalize namespaced attribute selector', function () {
+    var selector = ' unit[ sh | quantity = "200" ] ';
+    var expected = 'unit[sh|quantity="200"]';
+    assert.equal(normalizeSelector(selector), expected);    
+  });
+
   it('should normalize pseudo-classes', function () {
     var selector = "   :nth-last-of-type( )   ";
     assert.equal(normalizeSelector(selector), ":nth-last-of-type()");
