@@ -2,16 +2,18 @@
 
 # normalize-selector
 
-bullpen for testing [Kyle Simpson](//github.com/getify)'s `normalizeSelector()` 
-method from https://gist.github.com/getify/9679380
+This is a testing bullpen for [Kyle Simpson](//github.com/getify)'s 
+`normalizeSelector()` method from https://gist.github.com/getify/9679380
 
-# iteration
+# current iteration
 
-`normalize-selector-02.js`
+25 MAR 2014 - `normalize-selector-02.js`
 
 # npm
 
-squatting the name normalize-selector until @getify ready for pub
+Module being published on [npm](npmjs.org) by 
+[Kyle Simpson](//github.com/getify) at 
+https://www.npmjs.org/package/normalize-selector
 
 # rawgithub
 
@@ -34,14 +36,18 @@ If you're using testem
     
 # cases
 
-"some" cases taken from CSS [OPEN WEB REFERENCE](http://ref.openweb.io/CSS/)
+"some" cases taken from CSS [OPEN WEB REFERENCE](http://ref.openweb.io/CSS/), 
+and others from
+
++ http://www.w3.org/TR/css3-selectors/#attrnmsp
++ http://dev.w3.org/csswg/selectors4/#attribute-case
 
 # tdd-boilerplate
 
 project is built following my 
 [tdd-boilerplate](https://github.com/dfkaye/tdd-boilerplate), with testem, npm 
 scripts, travis, rawgithub, and mocha (node and browser tests).  that's probably 
-overkill...
+overkill.
 
 # license
 
