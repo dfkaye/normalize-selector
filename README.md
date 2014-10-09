@@ -15,10 +15,10 @@ Module being published on [npm](npmjs.org) by
 [Kyle Simpson](//github.com/getify) at 
 https://www.npmjs.org/package/normalize-selector
 
-# rawgithub
+# rawgit
 
 view the browser suite directly on 
-[rawgithub](https://rawgithub.com/dfkaye/normalize-selector/master/test/mocha/browser-suite.html)
+[rawgit](https://rawgit.com/dfkaye/normalize-selector/master/test/mocha/browser-suite.html)
 
 # tests
 
@@ -46,7 +46,7 @@ and others from
 
 project is built following my 
 [tdd-boilerplate](https://github.com/dfkaye/tdd-boilerplate), with testem, npm 
-scripts, travis, rawgithub, and mocha (node and browser tests).  that's probably 
+scripts, travis, rawgit, and mocha (node and browser tests).  that's probably 
 overkill.
 
 # license
